@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package auth.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "auth/api/auth/v1;v1";
+
+service auth {
+  // 登录接口
+  rpc login (LoginRequest) returns (Response) {
+    option (google.api.http) = {
+      post: "/api/auth/v1/login"
+      body: "*"
+    };
+  }
+  // 认证接口
+  rpc authentication (LoginRequest) returns (Response) {
+    option (google.api.http) = {
+      post: "/api/auth/v1/authentication"
+      body: "*"
+    };
+  }
+  rpc logout (LoginRequest) returns (Response) {
+    option (google.api.http) = {
+      post: "/api/auth/v1/logout"
+      body: "*"
+    };
+  }
+  rpc open_login_info (LoginRequest) returns (Response) {
+    option (google.api.http) = {
+      get: "/api/auth/v1/open_login_info"
+    };
+  }
+  rpc open_login (LoginRequest) returns (Response) {
+    option (google.api.http) = {
+      post: "/api/auth/v1/open_login"
+      body: "*"
+    };
+  }
+}
+// 登录请求
+message LoginRequest {
+  string UserName = 1;
+  string PassWord = 2;
+}
+// 登录响应
+message LoginResponse{
+  string Token = 1;
+}
+// 第三方登录响应
+message OpenLoginResponse {
+  string Name = 1;
+  string Icon = 2;
+  string Href = 3;
+}
+// 定义 OpenLoginResponses，用于包装多个 OpenLoginResponse
+message OpenLoginResponses {
+  repeated OpenLoginResponse responses = 1;
+}
+
+// 响应
+message Response {
+  uint32 Code = 1;
+  string Msg = 2;
+  oneof Data {
+    LoginResponse login_response = 3;
+    OpenLoginResponses open_login_response = 4;
+  }
+}

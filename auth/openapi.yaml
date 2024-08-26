@@ -3,15 +3,108 @@
 
 openapi: 3.0.3
 info:
-    title: Greeter API
-    description: The greeting service definition.
+    title: ""
     version: 0.0.1
 paths:
+    /api/auth/v1/authentication:
+        post:
+            tags:
+                - Auth
+            description: 认证接口
+            operationId: Auth_Authentication
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/auth.v1.LoginRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/auth.v1.Response'
+    /api/auth/v1/login:
+        post:
+            tags:
+                - Auth
+            description: 登录接口
+            operationId: Auth_Login
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/auth.v1.LoginRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/auth.v1.Response'
+    /api/auth/v1/logout:
+        post:
+            tags:
+                - Auth
+            operationId: Auth_Logout
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/auth.v1.LoginRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/auth.v1.Response'
+    /api/auth/v1/open_login:
+        post:
+            tags:
+                - Auth
+            operationId: Auth_OpenLogin
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/auth.v1.LoginRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/auth.v1.Response'
+    /api/auth/v1/open_login_info:
+        get:
+            tags:
+                - Auth
+            operationId: Auth_OpenLoginInfo
+            parameters:
+                - name: UserName
+                  in: query
+                  schema:
+                    type: string
+                - name: PassWord
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/auth.v1.Response'
     /helloworld/{name}:
         get:
             tags:
                 - Greeter
-                - subgroup
             description: Sends a greeting
             operationId: Greeter_SayHello
             parameters:
@@ -29,6 +122,51 @@ paths:
                                 $ref: '#/components/schemas/helloworld.v1.HelloReply'
 components:
     schemas:
+        auth.v1.LoginRequest:
+            type: object
+            properties:
+                UserName:
+                    type: string
+                PassWord:
+                    type: string
+            description: 登录请求
+        auth.v1.LoginResponse:
+            type: object
+            properties:
+                Token:
+                    type: string
+            description: 登录响应
+        auth.v1.OpenLoginResponse:
+            type: object
+            properties:
+                Name:
+                    type: string
+                Icon:
+                    type: string
+                Href:
+                    type: string
+            description: 第三方登录响应
+        auth.v1.OpenLoginResponses:
+            type: object
+            properties:
+                responses:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/auth.v1.OpenLoginResponse'
+            description: 定义 OpenLoginResponses，用于包装多个 OpenLoginResponse
+        auth.v1.Response:
+            type: object
+            properties:
+                Code:
+                    type: integer
+                    format: uint32
+                Msg:
+                    type: string
+                loginResponse:
+                    $ref: '#/components/schemas/auth.v1.LoginResponse'
+                openLoginResponse:
+                    $ref: '#/components/schemas/auth.v1.OpenLoginResponses'
+            description: 响应
         helloworld.v1.HelloReply:
             type: object
             properties:
@@ -36,4 +174,6 @@ components:
                     type: string
             description: The response message containing the greetings
 tags:
+    - name: Auth
     - name: Greeter
+      description: The greeting service definition.
