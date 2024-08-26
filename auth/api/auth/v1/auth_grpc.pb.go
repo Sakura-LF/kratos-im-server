@@ -8,6 +8,7 @@ package v1
 
 import (
 	context "context"
+	"fmt"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -155,6 +156,7 @@ func RegisterAuthServer(s grpc.ServiceRegistrar, srv AuthServer) {
 }
 
 func _Auth_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	fmt.Print("Sakura")
 	in := new(LoginRequest)
 	if err := dec(in); err != nil {
 		return nil, err
