@@ -11,10 +11,8 @@ import (
 
 type AuthService struct {
 	pb.UnimplementedAuthServer
-
 	user *biz.UserUsecase
-
-	log *log.Helper
+	log  *log.Helper
 }
 
 func NewAuthService(stu *biz.UserUsecase, logger log.Logger) *AuthService {

@@ -1,16 +1,21 @@
 package main
 
 import (
-	"flag"
-	"os"
-
 	"auth/internal/conf"
+	"flag"
+	"fmt"
+	z "github.com/go-kratos/kratos/contrib/log/zerolog/v2"
+	"github.com/rs/zerolog"
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"time"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 
@@ -49,15 +54,24 @@ func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
 
 func main() {
 	flag.Parse()
-	logger := log.With(log.NewStdLogger(os.Stdout),
-		"ts", log.DefaultTimestamp,
-		"caller", log.DefaultCaller,
-		"service.id", id,
-		"service.name", Name,
-		"service.version", Version,
-		"trace.id", tracing.TraceID(),
-		"span.id", tracing.SpanID(),
-	)
+	output := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.StampMilli}
+	// 日志输出时间格式
+	zerolog.TimeFieldFormat = time.StampMilli
+	zerologger := zerolog.New(output).With().Timestamp().CallerWithSkipFrameCount(4).
+		Logger()
+
+	// 日志输出文件行号
+	zerolog.CallerMarshalFunc = func(pc uintptr, file string, line int) string {
+		var builder strings.Builder
+		fmt.Println(file)
+		builder.WriteString(filepath.Base(file))
+		builder.WriteString(":")
+		builder.WriteString(strconv.Itoa(line))
+		return builder.String()
+		//return filepath.Base(file) + ":" + strconv.Itoa(line)
+	}
+	logger := z.NewLogger(&zerologger)
+
 	c := config.New(
 		config.WithSource(
 			file.NewSource(flagconf),
