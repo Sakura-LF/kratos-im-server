@@ -160,12 +160,12 @@ components:
                 Code:
                     type: integer
                     format: uint32
-                Msg:
-                    type: string
                 loginResponse:
                     $ref: '#/components/schemas/auth.v1.LoginResponse'
                 openLoginResponse:
                     $ref: '#/components/schemas/auth.v1.OpenLoginResponses'
+                Msg:
+                    type: string
             description: 响应
         helloworld.v1.HelloReply:
             type: object

@@ -24,7 +24,13 @@ func NewAuthService(stu *biz.UserUsecase, logger log.Logger) *AuthService {
 
 func (s *AuthService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Response, error) {
 	response := &pb.Response{}
-	fmt.Println("Test")
+	response.Msg = "success"
+	response.Data = &pb.Response_LoginResponse{
+		LoginResponse: &pb.LoginResponse{
+			Token: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+		},
+	}
+	response.Code = 200
 	return response, nil
 }
 func (s *AuthService) Authentication(ctx context.Context, req *pb.LoginRequest) (*pb.Response, error) {

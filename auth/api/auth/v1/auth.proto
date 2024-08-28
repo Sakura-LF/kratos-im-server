@@ -62,9 +62,9 @@ message OpenLoginResponses {
 // 响应
 message Response {
   uint32 Code = 1;
-  string Msg = 2;
   oneof Data {
-    LoginResponse login_response = 3;
-    OpenLoginResponses open_login_response = 4;
+    LoginResponse login_response = 2;
+    OpenLoginResponses open_login_response = 3;
   }
+  string Msg = 4;
 }
