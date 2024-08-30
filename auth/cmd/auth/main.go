@@ -3,21 +3,19 @@ package main
 import (
 	"auth/internal/conf"
 	"flag"
-	"fmt"
 	z "github.com/go-kratos/kratos/contrib/log/zerolog/v2"
-	"github.com/rs/zerolog"
-	"os"
-	"path/filepath"
-	"strconv"
-	"strings"
-	"time"
-
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"github.com/rs/zerolog"
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"time"
 
 	_ "go.uber.org/automaxprocs"
 )
@@ -63,7 +61,6 @@ func main() {
 	// 日志输出文件行号
 	zerolog.CallerMarshalFunc = func(pc uintptr, file string, line int) string {
 		var builder strings.Builder
-		fmt.Println(file)
 		builder.WriteString(filepath.Base(file))
 		builder.WriteString(":")
 		builder.WriteString(strconv.Itoa(line))
@@ -78,7 +75,6 @@ func main() {
 		),
 	)
 	defer c.Close()
-
 	if err := c.Load(); err != nil {
 		panic(err)
 	}
@@ -87,8 +83,8 @@ func main() {
 	if err := c.Scan(&bc); err != nil {
 		panic(err)
 	}
-
-	app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
+	// 注入 auth 配置
+	app, cleanup, err := wireApp(bc.Server, bc.Data, bc.Auth, logger)
 	if err != nil {
 		panic(err)
 	}

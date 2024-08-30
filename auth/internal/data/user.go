@@ -11,29 +11,13 @@ type userRepo struct {
 	log  *log.Helper
 }
 
-func (u userRepo) Save(ctx context.Context, user *biz.User) (*biz.User, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (u userRepo) Update(ctx context.Context, user *biz.User) (*biz.User, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (u userRepo) FindByID(ctx context.Context, i int64) (*biz.User, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (u userRepo) ListByHello(ctx context.Context, s string) ([]*biz.User, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (u userRepo) ListAll(ctx context.Context) ([]*biz.User, error) {
-	//TODO implement me
-	panic("implement me")
+func (u *userRepo) FindByUserName(ctx context.Context, userName string) (*biz.User, error) {
+	var user *biz.User
+	if err := u.data.db.Take(&user, "id = ?", userName).Error; err != nil {
+		u.log.Error(err)
+		return nil, err
+	}
+	return user, nil
 }
 
 // NewUserRepo  .

@@ -23,15 +23,16 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
-	db := data.NewDB(confData)
-	dataData, cleanup, err := data.NewData(confData, logger, db)
+func wireApp(confServer *conf.Server, confData *conf.Data, auth *conf.Auth, logger log.Logger) (*kratos.App, func(), error) {
+	db := data.NewDB(confData, logger)
+	client := data.NewRedis(confData, logger)
+	dataData, cleanup, err := data.NewData(confData, logger, db, client)
 	if err != nil {
 		return nil, nil, err
 	}
 	userRepo := data.NewUserRepo(dataData, logger)
 	userUsecase := biz.NewUserUsecase(userRepo, logger)
-	authService := service.NewAuthService(userUsecase, logger)
+	authService := service.NewAuthService(userUsecase, logger, auth)
 	grpcServer := server.NewGRPCServer(confServer, authService, logger)
 	httpServer := server.NewHTTPServer(confServer, authService, logger)
 	app := newApp(logger, grpcServer, httpServer)

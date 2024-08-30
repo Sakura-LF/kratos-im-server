@@ -20,11 +20,7 @@ type User struct {
 
 // UserRepo  is a Greater repo.
 type UserRepo interface {
-	Save(context.Context, *User) (*User, error)
-	Update(context.Context, *User) (*User, error)
-	FindByID(context.Context, int64) (*User, error)
-	ListByHello(context.Context, string) ([]*User, error)
-	ListAll(context.Context) ([]*User, error)
+	FindByUserName(context.Context, string) (*User, error)
 }
 
 // UserUsecase  is a User usecase.
@@ -38,8 +34,7 @@ func NewUserUsecase(repo UserRepo, logger log.Logger) *UserUsecase {
 	return &UserUsecase{repo: repo, log: log.NewHelper(logger)}
 }
 
-// CreateUser CreateGreeter creates a Greeter, and returns the new Greeter.
-func (uc *UserUsecase) CreateUser(ctx context.Context, g *User) (*User, error) {
-	uc.log.WithContext(ctx).Infof("CreateGreeter: %v", "sakura")
-	return uc.repo.Save(ctx, g)
+// GetUser CreateUser CreateGreeter creates a Greeter, and returns the new Greeter.
+func (uc *UserUsecase) GetUser(ctx context.Context, userName string) (*User, error) {
+	return uc.repo.FindByUserName(ctx, userName)
 }
