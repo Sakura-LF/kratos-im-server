@@ -17,4 +17,12 @@ data:
     write_timeout: 0.2s
 auth:
   access_secret: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
-  access_expire: 3600
+  access_expire: 10
+openLoginList:
+  items:
+  - name: qq
+    icon: test.com
+    href: testhref.com
+  - name: weixin
+    icon: test.com
+    href: testhref.com

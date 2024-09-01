@@ -3,6 +3,7 @@ package main
 import (
 	"auth/internal/conf"
 	"flag"
+	"fmt"
 	z "github.com/go-kratos/kratos/contrib/log/zerolog/v2"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
@@ -23,7 +24,7 @@ import (
 // go build -ldflags "-X main.Version=x.y.z"
 var (
 	// Name is the name of the compiled software.
-	Name string
+	Name string = "auth"
 	// Version is the version of the compiled software.
 	Version string
 	// flagconf is the config flag.
@@ -55,7 +56,7 @@ func main() {
 	output := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.StampMilli}
 	// 日志输出时间格式
 	zerolog.TimeFieldFormat = time.StampMilli
-	zerologger := zerolog.New(output).With().Timestamp().CallerWithSkipFrameCount(4).
+	zerologger := zerolog.New(output).With().Timestamp().Str("Service", Name).CallerWithSkipFrameCount(4).
 		Logger()
 
 	// 日志输出文件行号
@@ -65,9 +66,9 @@ func main() {
 		builder.WriteString(":")
 		builder.WriteString(strconv.Itoa(line))
 		return builder.String()
-		//return filepath.Base(file) + ":" + strconv.Itoa(line)
 	}
 	logger := z.NewLogger(&zerologger)
+	log.NewHelper(logger).Info("Sa")
 
 	c := config.New(
 		config.WithSource(
@@ -83,8 +84,9 @@ func main() {
 	if err := c.Scan(&bc); err != nil {
 		panic(err)
 	}
+	fmt.Print(bc.OpenLoginList.Items)
 	// 注入 auth 配置
-	app, cleanup, err := wireApp(bc.Server, bc.Data, bc.Auth, logger)
+	app, cleanup, err := wireApp(bc.Server, bc.Data, bc.Auth, bc.OpenLoginList, logger)
 	if err != nil {
 		panic(err)
 	}

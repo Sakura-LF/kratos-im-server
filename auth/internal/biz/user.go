@@ -3,7 +3,9 @@ package biz
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
+	"time"
 )
 
 // User 用户表
@@ -20,7 +22,13 @@ type User struct {
 
 // UserRepo  is a Greater repo.
 type UserRepo interface {
+	// FindByUserName 1df1
 	FindByUserName(context.Context, string) (*User, error)
+
+	// Set  设置Token
+	Set(context.Context, string, string, time.Duration) *redis.StatusCmd
+	// Get
+	Get(context.Context, string) *redis.StringCmd
 }
 
 // UserUsecase  is a User usecase.
@@ -37,4 +45,11 @@ func NewUserUsecase(repo UserRepo, logger log.Logger) *UserUsecase {
 // GetUser CreateUser CreateGreeter creates a Greeter, and returns the new Greeter.
 func (uc *UserUsecase) GetUser(ctx context.Context, userName string) (*User, error) {
 	return uc.repo.FindByUserName(ctx, userName)
+}
+
+func (uc *UserUsecase) SetToken(ctx context.Context, key, token string, expiration time.Duration) error {
+	return uc.repo.Set(ctx, key, token, expiration).Err()
+}
+func (uc *UserUsecase) GetToken(ctx context.Context, key string) (string, error) {
+	return uc.repo.Get(ctx, key).Result()
 }

@@ -13,7 +13,14 @@ enum ErrorReason {
   option (errors.default_code) = 500;
 
   // 为某个枚举单独设置错误码
-  USER_NOT_FOUND = 0 [(errors.code) = 404];
+  USER_NOT_FOUND = 0 [(errors.code) = 401];
 
-  CONTENT_MISSING = 1 [(errors.code) = 400];
+  PASSWORD_ERROR = 1 [(errors.code) = 401];
+
+  AUTHENTICATION_FAILED = 2 [(errors.code) = 401];
+
+  TOKEN_EMPTY = 3 [(errors.code) = 401];
+  PARSE_TOKEN_ERROR = 4 [(errors.code) = 401];
+  SET_TOKEN_ERROR = 5 [(errors.code) = 500];
+
 }

@@ -10,6 +10,7 @@ import (
 	context "context"
 	http "github.com/go-kratos/kratos/v2/transport/http"
 	binding "github.com/go-kratos/kratos/v2/transport/http/binding"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -27,12 +28,12 @@ const OperationAuthopen_login_info = "/auth.v1.auth/open_login_info"
 
 type AuthHTTPServer interface {
 	// Authentication 认证接口
-	Authentication(context.Context, *LoginRequest) (*Response, error)
+	Authentication(context.Context, *emptypb.Empty) (*Response, error)
 	// Login 登录接口
 	Login(context.Context, *LoginRequest) (*Response, error)
-	Logout(context.Context, *LoginRequest) (*Response, error)
+	Logout(context.Context, *emptypb.Empty) (*Response, error)
 	OpenLogin(context.Context, *LoginRequest) (*Response, error)
-	OpenLoginInfo(context.Context, *LoginRequest) (*Response, error)
+	OpenLoginInfo(context.Context, *emptypb.Empty) (*Response, error)
 }
 
 func RegisterAuthHTTPServer(s *http.Server, srv AuthHTTPServer) {
@@ -68,7 +69,7 @@ func _Auth_Login0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error 
 
 func _Auth_Authentication0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in LoginRequest
+		var in emptypb.Empty
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
@@ -77,7 +78,7 @@ func _Auth_Authentication0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Contex
 		}
 		http.SetOperation(ctx, OperationAuthauthentication)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.Authentication(ctx, req.(*LoginRequest))
+			return srv.Authentication(ctx, req.(*emptypb.Empty))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -90,7 +91,7 @@ func _Auth_Authentication0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Contex
 
 func _Auth_Logout0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in LoginRequest
+		var in emptypb.Empty
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
@@ -99,7 +100,7 @@ func _Auth_Logout0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error
 		}
 		http.SetOperation(ctx, OperationAuthlogout)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.Logout(ctx, req.(*LoginRequest))
+			return srv.Logout(ctx, req.(*emptypb.Empty))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -112,13 +113,13 @@ func _Auth_Logout0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error
 
 func _Auth_OpenLoginInfo0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in LoginRequest
+		var in emptypb.Empty
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
 		http.SetOperation(ctx, OperationAuthopen_login_info)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.OpenLoginInfo(ctx, req.(*LoginRequest))
+			return srv.OpenLoginInfo(ctx, req.(*emptypb.Empty))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -152,11 +153,11 @@ func _Auth_OpenLogin0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) er
 }
 
 type AuthHTTPClient interface {
-	Authentication(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *Response, err error)
+	Authentication(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *Response, err error)
 	Login(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *Response, err error)
-	Logout(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *Response, err error)
+	Logout(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *Response, err error)
 	OpenLogin(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *Response, err error)
-	OpenLoginInfo(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *Response, err error)
+	OpenLoginInfo(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *Response, err error)
 }
 
 type AuthHTTPClientImpl struct {
@@ -167,7 +168,7 @@ func NewAuthHTTPClient(client *http.Client) AuthHTTPClient {
 	return &AuthHTTPClientImpl{client}
 }
 
-func (c *AuthHTTPClientImpl) Authentication(ctx context.Context, in *LoginRequest, opts ...http.CallOption) (*Response, error) {
+func (c *AuthHTTPClientImpl) Authentication(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*Response, error) {
 	var out Response
 	pattern := "/api/auth/v1/authentication"
 	path := binding.EncodeURL(pattern, in, false)
@@ -193,7 +194,7 @@ func (c *AuthHTTPClientImpl) Login(ctx context.Context, in *LoginRequest, opts .
 	return &out, nil
 }
 
-func (c *AuthHTTPClientImpl) Logout(ctx context.Context, in *LoginRequest, opts ...http.CallOption) (*Response, error) {
+func (c *AuthHTTPClientImpl) Logout(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*Response, error) {
 	var out Response
 	pattern := "/api/auth/v1/logout"
 	path := binding.EncodeURL(pattern, in, false)
@@ -219,7 +220,7 @@ func (c *AuthHTTPClientImpl) OpenLogin(ctx context.Context, in *LoginRequest, op
 	return &out, nil
 }
 
-func (c *AuthHTTPClientImpl) OpenLoginInfo(ctx context.Context, in *LoginRequest, opts ...http.CallOption) (*Response, error) {
+func (c *AuthHTTPClientImpl) OpenLoginInfo(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*Response, error) {
 	var out Response
 	pattern := "/api/auth/v1/open_login_info"
 	path := binding.EncodeURL(pattern, in, true)

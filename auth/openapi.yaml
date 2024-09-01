@@ -14,9 +14,7 @@ paths:
             operationId: Auth_Authentication
             requestBody:
                 content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/auth.v1.LoginRequest'
+                    application/json: {}
                 required: true
             responses:
                 "200":
@@ -51,9 +49,7 @@ paths:
             operationId: Auth_Logout
             requestBody:
                 content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/auth.v1.LoginRequest'
+                    application/json: {}
                 required: true
             responses:
                 "200":
@@ -85,15 +81,6 @@ paths:
             tags:
                 - Auth
             operationId: Auth_OpenLoginInfo
-            parameters:
-                - name: UserName
-                  in: query
-                  schema:
-                    type: string
-                - name: PassWord
-                  in: query
-                  schema:
-                    type: string
             responses:
                 "200":
                     description: OK
@@ -130,12 +117,6 @@ components:
                 PassWord:
                     type: string
             description: 登录请求
-        auth.v1.LoginResponse:
-            type: object
-            properties:
-                Token:
-                    type: string
-            description: 登录响应
         auth.v1.OpenLoginResponse:
             type: object
             properties:
@@ -146,14 +127,6 @@ components:
                 Href:
                     type: string
             description: 第三方登录响应
-        auth.v1.OpenLoginResponses:
-            type: object
-            properties:
-                responses:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/auth.v1.OpenLoginResponse'
-            description: 定义 OpenLoginResponses，用于包装多个 OpenLoginResponse
         auth.v1.Response:
             type: object
             properties:
@@ -161,12 +134,30 @@ components:
                     type: integer
                     format: uint32
                 loginResponse:
-                    $ref: '#/components/schemas/auth.v1.LoginResponse'
+                    $ref: '#/components/schemas/auth.v1.Response_LoginResponse'
                 openLoginResponse:
-                    $ref: '#/components/schemas/auth.v1.OpenLoginResponses'
+                    $ref: '#/components/schemas/auth.v1.Response_OpenLoginResponses'
                 Msg:
                     type: string
             description: 响应
+        auth.v1.Response_LoginResponse:
+            type: object
+            properties:
+                Token:
+                    type: string
+            description: |-
+                oneof Data {
+                    LoginResponse login_response = 2;
+                    OpenLoginResponses open_login_response = 3;
+                  }
+                 登录响应
+        auth.v1.Response_OpenLoginResponses:
+            type: object
+            properties:
+                openLoginInfo:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/auth.v1.OpenLoginResponse'
         helloworld.v1.HelloReply:
             type: object
             properties:

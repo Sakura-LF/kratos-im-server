@@ -75,13 +75,19 @@ func NewRedis(c *conf.Data, zlog log.Logger) *redis.Client {
 
 // NewData .
 func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client) (*Data, func(), error) {
+	zlog := log.NewHelper(logger)
 	cleanup := func() {
-		log.NewHelper(logger).Info("closing the data resources")
+		err := rdb.Close()
+		if err != nil {
+			zlog.Fatal("redis close error")
+			return
+		}
+		zlog.Info("closing the data resources")
 	}
 	if err := db.AutoMigrate(&biz.User{}); err != nil {
-		log.NewHelper(logger).Info("user table migrate fail")
+		zlog.Info("user table migrate fail")
 	} else {
-		log.NewHelper(logger).Info("user table migrate success")
+		zlog.Info("user table migrate success")
 	}
 	return &Data{
 		db:  db,

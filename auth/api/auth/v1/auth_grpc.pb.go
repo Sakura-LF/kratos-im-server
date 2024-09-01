@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -33,9 +34,9 @@ type AuthClient interface {
 	// 登录接口
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Response, error)
 	// 认证接口
-	Authentication(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Response, error)
-	Logout(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Response, error)
-	OpenLoginInfo(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Response, error)
+	Authentication(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Response, error)
+	Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Response, error)
+	OpenLoginInfo(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Response, error)
 	OpenLogin(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Response, error)
 }
 
@@ -57,7 +58,7 @@ func (c *authClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.C
 	return out, nil
 }
 
-func (c *authClient) Authentication(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Response, error) {
+func (c *authClient) Authentication(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Response, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Response)
 	err := c.cc.Invoke(ctx, Auth_Authentication_FullMethodName, in, out, cOpts...)
@@ -67,7 +68,7 @@ func (c *authClient) Authentication(ctx context.Context, in *LoginRequest, opts 
 	return out, nil
 }
 
-func (c *authClient) Logout(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Response, error) {
+func (c *authClient) Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Response, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Response)
 	err := c.cc.Invoke(ctx, Auth_Logout_FullMethodName, in, out, cOpts...)
@@ -77,7 +78,7 @@ func (c *authClient) Logout(ctx context.Context, in *LoginRequest, opts ...grpc.
 	return out, nil
 }
 
-func (c *authClient) OpenLoginInfo(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Response, error) {
+func (c *authClient) OpenLoginInfo(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Response, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Response)
 	err := c.cc.Invoke(ctx, Auth_OpenLoginInfo_FullMethodName, in, out, cOpts...)
@@ -104,9 +105,9 @@ type AuthServer interface {
 	// 登录接口
 	Login(context.Context, *LoginRequest) (*Response, error)
 	// 认证接口
-	Authentication(context.Context, *LoginRequest) (*Response, error)
-	Logout(context.Context, *LoginRequest) (*Response, error)
-	OpenLoginInfo(context.Context, *LoginRequest) (*Response, error)
+	Authentication(context.Context, *emptypb.Empty) (*Response, error)
+	Logout(context.Context, *emptypb.Empty) (*Response, error)
+	OpenLoginInfo(context.Context, *emptypb.Empty) (*Response, error)
 	OpenLogin(context.Context, *LoginRequest) (*Response, error)
 	mustEmbedUnimplementedAuthServer()
 }
@@ -121,13 +122,13 @@ type UnimplementedAuthServer struct{}
 func (UnimplementedAuthServer) Login(context.Context, *LoginRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedAuthServer) Authentication(context.Context, *LoginRequest) (*Response, error) {
+func (UnimplementedAuthServer) Authentication(context.Context, *emptypb.Empty) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Authentication not implemented")
 }
-func (UnimplementedAuthServer) Logout(context.Context, *LoginRequest) (*Response, error) {
+func (UnimplementedAuthServer) Logout(context.Context, *emptypb.Empty) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
 }
-func (UnimplementedAuthServer) OpenLoginInfo(context.Context, *LoginRequest) (*Response, error) {
+func (UnimplementedAuthServer) OpenLoginInfo(context.Context, *emptypb.Empty) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method OpenLoginInfo not implemented")
 }
 func (UnimplementedAuthServer) OpenLogin(context.Context, *LoginRequest) (*Response, error) {
@@ -173,7 +174,7 @@ func _Auth_Login_Handler(srv interface{}, ctx context.Context, dec func(interfac
 }
 
 func _Auth_Authentication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoginRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -185,13 +186,13 @@ func _Auth_Authentication_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: Auth_Authentication_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).Authentication(ctx, req.(*LoginRequest))
+		return srv.(AuthServer).Authentication(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Auth_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoginRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -203,13 +204,13 @@ func _Auth_Logout_Handler(srv interface{}, ctx context.Context, dec func(interfa
 		FullMethod: Auth_Logout_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).Logout(ctx, req.(*LoginRequest))
+		return srv.(AuthServer).Logout(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Auth_OpenLoginInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoginRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -221,7 +222,7 @@ func _Auth_OpenLoginInfo_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: Auth_OpenLoginInfo_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).OpenLoginInfo(ctx, req.(*LoginRequest))
+		return srv.(AuthServer).OpenLoginInfo(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
