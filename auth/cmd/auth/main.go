@@ -3,22 +3,23 @@ package main
 import (
 	"auth/internal/conf"
 	"flag"
-	"fmt"
 	z "github.com/go-kratos/kratos/contrib/log/zerolog/v2"
+	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/rs/zerolog"
+	clientv3 "go.etcd.io/etcd/client/v3"
+	_ "go.uber.org/automaxprocs"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
-
-	_ "go.uber.org/automaxprocs"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -37,7 +38,7 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
+func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, r registry.Registrar) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),
@@ -48,6 +49,7 @@ func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
 			gs,
 			hs,
 		),
+		kratos.Registrar(r),
 	)
 }
 
@@ -84,9 +86,20 @@ func main() {
 	if err := c.Scan(&bc); err != nil {
 		panic(err)
 	}
-	fmt.Print(bc.OpenLoginList.Items)
+	// 验证配置
+	//log.NewHelper(logger).Info(bc.String())
+	// 服务注册到ETCD
+	client, err2 := clientv3.New(clientv3.Config{
+		Endpoints: bc.Registry.Etcd.Addr,
+	})
+	if err2 != nil {
+		panic(err2)
+	}
+
+	etcdClient := etcd.New(client)
+
 	// 注入 auth 配置
-	app, cleanup, err := wireApp(bc.Server, bc.Data, bc.Auth, bc.OpenLoginList, logger)
+	app, cleanup, err := wireApp(bc.Server, bc.Data, bc.Auth, bc.OpenLoginList, logger, etcdClient, etcdClient)
 	if err != nil {
 		panic(err)
 	}

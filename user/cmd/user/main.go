@@ -2,17 +2,24 @@ package main
 
 import (
 	"flag"
+	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
+	"github.com/go-kratos/kratos/v2/registry"
+	"github.com/rs/zerolog"
+	clientv3 "go.etcd.io/etcd/client/v3"
 	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"time"
 
-	"user/internal/conf"
-
+	z "github.com/go-kratos/kratos/contrib/log/zerolog/v2"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"user/internal/conf"
 
 	_ "go.uber.org/automaxprocs"
 )
@@ -20,7 +27,7 @@ import (
 // go build -ldflags "-X main.Version=x.y.z"
 var (
 	// Name is the name of the compiled software.
-	Name string
+	Name string = "user"
 	// Version is the version of the compiled software.
 	Version string
 	// flagconf is the config flag.
@@ -33,7 +40,7 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
+func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, r registry.Registrar) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),
@@ -44,20 +51,29 @@ func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
 			gs,
 			hs,
 		),
+		kratos.Registrar(r),
 	)
 }
 
 func main() {
 	flag.Parse()
-	logger := log.With(log.NewStdLogger(os.Stdout),
-		"ts", log.DefaultTimestamp,
-		"caller", log.DefaultCaller,
-		"service.id", id,
-		"service.name", Name,
-		"service.version", Version,
-		"trace.id", tracing.TraceID(),
-		"span.id", tracing.SpanID(),
-	)
+	output := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.StampMilli}
+	// 日志输出时间格式
+	zerolog.TimeFieldFormat = time.StampMilli
+	zerologger := zerolog.New(output).With().Timestamp().Str("Service", Name).CallerWithSkipFrameCount(4).
+		Logger()
+
+	// 日志输出文件行号
+	zerolog.CallerMarshalFunc = func(pc uintptr, file string, line int) string {
+		var builder strings.Builder
+		builder.WriteString(filepath.Base(file))
+		builder.WriteString(":")
+		builder.WriteString(strconv.Itoa(line))
+		return builder.String()
+	}
+	logger := z.NewLogger(&zerologger)
+	log.NewHelper(logger).Info("Sa")
+
 	c := config.New(
 		config.WithSource(
 			file.NewSource(flagconf),
@@ -74,7 +90,18 @@ func main() {
 		panic(err)
 	}
 
-	app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
+	// 验证配置
+	log.NewHelper(logger).Info(bc.String())
+	// 服务注册到ETCD
+	client, err2 := clientv3.New(clientv3.Config{
+		Endpoints: bc.Registry.Etcd.Addr,
+	})
+	if err2 != nil {
+		panic(err2)
+	}
+	etcdClient := etcd.New(client)
+
+	app, cleanup, err := wireApp(bc.Server, bc.Data, logger, etcdClient)
 	if err != nil {
 		panic(err)
 	}

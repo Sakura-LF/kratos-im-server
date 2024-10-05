@@ -7,12 +7,15 @@ import (
 	"fmt"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport"
+	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+	v1 "user/api/helloworld/v1"
 	"util/jwt"
 	"util/pwd"
 
@@ -21,23 +24,38 @@ import (
 
 type AuthService struct {
 	pb.UnimplementedAuthServer
-	user          *biz.UserUsecase
-	log           *log.Helper
+	user *biz.UserUsecase
+	log  *log.Helper
+
+	greeterClient v1.GreeterClient
+
 	auth          *conf.Auth
 	openLoginInfo *conf.OpenLoginList
 }
 
-func NewAuthService(stu *biz.UserUsecase, logger log.Logger, auth *conf.Auth, openLoginInfo *conf.OpenLoginList) *AuthService {
+func NewAuthService(stu *biz.UserUsecase, logger log.Logger, auth *conf.Auth, openLoginInfo *conf.OpenLoginList, etcdClient registry.Discovery) *AuthService {
+	// 服务发现
+	connGRPC, err := grpc.DialInsecure(
+		context.Background(),
+		grpc.WithEndpoint("discovery:///user"),
+		grpc.WithDiscovery(etcdClient),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return &AuthService{
 		user:          stu,
 		log:           log.NewHelper(logger),
 		auth:          auth,
 		openLoginInfo: openLoginInfo,
+		greeterClient: v1.NewGreeterClient(connGRPC),
 	}
 }
 
 // Login 登录
 func (s *AuthService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Response, error) {
+
 	s.log.Info("[HTTP] --> login")
 	response := &pb.Response{}
 	// 检查用户
@@ -68,6 +86,7 @@ func (s *AuthService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Resp
 }
 func (s *AuthService) Authentication(ctx context.Context, empty *emptypb.Empty) (*pb.Response, error) {
 	s.log.Infof("[HTTP] --> authentication")
+	// 从请求头中拿到token
 	if tr, ok := transport.FromServerContext(ctx); ok {
 		token := tr.RequestHeader().Get("Authorization")
 		if token == "" {

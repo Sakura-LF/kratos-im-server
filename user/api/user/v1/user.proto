@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package user.v1;
+
+//import "google/api/annotations.proto";
+
+option go_package = "user/api/user/v1;v1";
+option java_multiple_files = true;
+
+
+

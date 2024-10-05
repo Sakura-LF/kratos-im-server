@@ -10,6 +10,7 @@ message Bootstrap {
   Data data = 2;
   Auth auth = 3;
   OpenLoginList open_login_list = 4;
+  Registry registry = 5;
 }
 
 message Server {
@@ -55,4 +56,12 @@ message OpenLoginList {
     string href = 3;
   }
   repeated LoginItem items = 1;
+}
+
+message Registry {
+  message Etcd {
+    repeated string addr = 1;
+    string key = 2;
+  }
+  Etcd etcd = 1;
 }
