@@ -5,4 +5,4 @@ import "github.com/google/wire"
 // ProviderSet is biz providers.
 //var ProviderSet = wire.NewSet(NewGreeterUsecase)
 
-var BizProviderSet = wire.NewSet(NewUserUsecase)
+var BizProviderSet = wire.NewSet(NewAuthUsecase)

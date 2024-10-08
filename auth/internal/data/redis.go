@@ -6,10 +6,10 @@ import (
 	"time"
 )
 
-func (u *userRepo) Set(ctx context.Context, key string, value string, duration time.Duration) *redis.StatusCmd {
+func (u *authRepo) Set(ctx context.Context, key string, value string, duration time.Duration) *redis.StatusCmd {
 	return u.data.rdb.Set(ctx, key, value, duration)
 }
 
-func (u *userRepo) Get(ctx context.Context, s string) *redis.StringCmd {
+func (u *authRepo) Get(ctx context.Context, s string) *redis.StringCmd {
 	return u.data.rdb.Get(ctx, s)
 }

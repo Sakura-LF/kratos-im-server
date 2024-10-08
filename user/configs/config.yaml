@@ -8,9 +8,11 @@ server:
 data:
   database:
     driver: mysql
-    source: root:root@tcp(127.0.0.1:3306)/test?parseTime=True&loc=Local
+    source: root:mysql_TcKPjC@tcp(192.168.233.128:3306)/im_server?parseTime=True&loc=Local
   redis:
-    addr: 127.0.0.1:6379
+    addr: 192.168.233.128:6379
+    username: default
+    password: redis_jFFiD3
     read_timeout: 0.2s
     write_timeout: 0.2s
 # 服务注册配置

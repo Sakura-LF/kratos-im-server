@@ -6,12 +6,12 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 )
 
-type userRepo struct {
+type authRepo struct {
 	data *Data
 	log  *log.Helper
 }
 
-func (u *userRepo) FindByUserName(ctx context.Context, userName string) (*biz.User, error) {
+func (u *authRepo) FindByUserName(ctx context.Context, userName string) (*biz.User, error) {
 	var user *biz.User
 	if err := u.data.db.Take(&user, "id = ?", userName).Error; err != nil {
 		u.log.Error(err)
@@ -20,9 +20,9 @@ func (u *userRepo) FindByUserName(ctx context.Context, userName string) (*biz.Us
 	return user, nil
 }
 
-// NewUserRepo  .
-func NewUserRepo(data *Data, logger log.Logger) biz.UserRepo {
-	return &userRepo{
+// NewAuthRepo  .
+func NewAuthRepo(data *Data, logger log.Logger) biz.AuthRepo {
+	return &authRepo{
 		data: data,
 		log:  log.NewHelper(logger),
 	}

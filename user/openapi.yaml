@@ -3,10 +3,28 @@
 
 openapi: 3.0.3
 info:
-    title: Greeter API
-    description: The greeting service definition.
+    title: ""
     version: 0.0.1
 paths:
+    /api/user/v1/create:
+        post:
+            tags:
+                - Users
+            description: 创建用户
+            operationId: Users_CreateUser
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/user.v1.UserInfoRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/user.v1.UserInfoResponse'
     /helloworld/{name}:
         get:
             tags:
@@ -25,14 +43,36 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/helloworld.v1.HelloReply'
+                                $ref: '#/components/schemas/greeter.v1.HelloReply'
 components:
     schemas:
-        helloworld.v1.HelloReply:
+        greeter.v1.HelloReply:
             type: object
             properties:
                 message:
                     type: string
             description: The response message containing the greetings
+        user.v1.UserInfoRequest:
+            type: object
+            properties:
+                nickName:
+                    type: string
+                password:
+                    type: string
+                role:
+                    type: integer
+                    format: int32
+                avatar:
+                    type: string
+                openId:
+                    type: string
+        user.v1.UserInfoResponse:
+            type: object
+            properties:
+                userId:
+                    type: integer
+                    format: int32
 tags:
     - name: Greeter
+      description: The greeting service definition.
+    - name: Users

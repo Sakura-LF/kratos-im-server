@@ -18,10 +18,11 @@ type User struct {
 	IP       string `gorm:"size:32" json:"ip"`
 	Addr     string `gorm:"size:64" json:"addr"`
 	Role     int    `json:"role"` //角色1 管理员2 普通用户
+	OpenID   string `gorm:"size:64" json:"token"`
 }
 
-// UserRepo  is a Greater repo.
-type UserRepo interface {
+// AuthRepo  is a Greater repo.
+type AuthRepo interface {
 	// FindByUserName 1df1
 	FindByUserName(context.Context, string) (*User, error)
 
@@ -31,25 +32,28 @@ type UserRepo interface {
 	Get(context.Context, string) *redis.StringCmd
 }
 
-// UserUsecase  is a User usecase.
-type UserUsecase struct {
-	repo UserRepo
+// AuthUsecase  is a User usecase.
+type AuthUsecase struct {
+	repo AuthRepo
 	log  *log.Helper
 }
 
-// NewUserUsecase new a User usecase.
-func NewUserUsecase(repo UserRepo, logger log.Logger) *UserUsecase {
-	return &UserUsecase{repo: repo, log: log.NewHelper(logger)}
+// NewAuthUsecase new a User usecase.
+func NewAuthUsecase(repo AuthRepo, logger log.Logger) *AuthUsecase {
+	return &AuthUsecase{
+		repo: repo,
+		log:  log.NewHelper(logger),
+	}
 }
 
 // GetUser CreateUser CreateGreeter creates a Greeter, and returns the new Greeter.
-func (uc *UserUsecase) GetUser(ctx context.Context, userName string) (*User, error) {
+func (uc *AuthUsecase) GetUser(ctx context.Context, userName string) (*User, error) {
 	return uc.repo.FindByUserName(ctx, userName)
 }
 
-func (uc *UserUsecase) SetToken(ctx context.Context, key, token string, expiration time.Duration) error {
+func (uc *AuthUsecase) SetToken(ctx context.Context, key, token string, expiration time.Duration) error {
 	return uc.repo.Set(ctx, key, token, expiration).Err()
 }
-func (uc *UserUsecase) GetToken(ctx context.Context, key string) (string, error) {
+func (uc *AuthUsecase) GetToken(ctx context.Context, key string) (string, error) {
 	return uc.repo.Get(ctx, key).Result()
 }

@@ -24,7 +24,7 @@ import (
 
 type AuthService struct {
 	pb.UnimplementedAuthServer
-	user *biz.UserUsecase
+	user *biz.AuthUsecase
 	log  *log.Helper
 
 	greeterClient v1.GreeterClient
@@ -33,7 +33,7 @@ type AuthService struct {
 	openLoginInfo *conf.OpenLoginList
 }
 
-func NewAuthService(stu *biz.UserUsecase, logger log.Logger, auth *conf.Auth, openLoginInfo *conf.OpenLoginList, etcdClient registry.Discovery) *AuthService {
+func NewAuthService(stu *biz.AuthUsecase, logger log.Logger, auth *conf.Auth, openLoginInfo *conf.OpenLoginList, etcdClient registry.Discovery) *AuthService {
 	// 服务发现
 	connGRPC, err := grpc.DialInsecure(
 		context.Background(),
@@ -143,6 +143,10 @@ func (s *AuthService) Logout(ctx context.Context, empty *emptypb.Empty) (*pb.Res
 	}, nil
 }
 func (s *AuthService) OpenLoginInfo(ctx context.Context, empty *emptypb.Empty) (*pb.Response, error) {
+	//hello, _ := s.greeterClient.SayHello(ctx, &v1.HelloRequest{
+	//	Name: "openLogin",
+	//})
+	//fmt.Println(hello)
 	s.log.Info("[HTTP] --> openLoginInfo")
 	response := &pb.Response{
 		OpenLoginResponse: &pb.Response_OpenLoginResponses{

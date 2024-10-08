@@ -70,7 +70,6 @@ func main() {
 		return builder.String()
 	}
 	logger := z.NewLogger(&zerologger)
-	log.NewHelper(logger).Info("Sa")
 
 	c := config.New(
 		config.WithSource(
@@ -99,7 +98,15 @@ func main() {
 	etcdClient := etcd.New(client)
 
 	// 注入 auth 配置
-	app, cleanup, err := wireApp(bc.Server, bc.Data, bc.Auth, bc.OpenLoginList, logger, etcdClient, etcdClient)
+	app, cleanup, err := wireApp(
+		bc.Server,
+		bc.Data,
+		bc.Auth,
+		bc.OpenLoginList,
+		logger,
+		etcdClient,
+		etcdClient,
+	)
 	if err != nil {
 		panic(err)
 	}

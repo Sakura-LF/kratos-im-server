@@ -72,7 +72,6 @@ func main() {
 		return builder.String()
 	}
 	logger := z.NewLogger(&zerologger)
-	log.NewHelper(logger).Info("Sa")
 
 	c := config.New(
 		config.WithSource(
@@ -91,7 +90,8 @@ func main() {
 	}
 
 	// 验证配置
-	log.NewHelper(logger).Info(bc.String())
+	//log.NewHelper(logger).Log(log.LevelDebug, "data", bc.Server)
+	//log.NewHelper(logger).Info(bc.String())
 	// 服务注册到ETCD
 	client, err2 := clientv3.New(clientv3.Config{
 		Endpoints: bc.Registry.Etcd.Addr,
